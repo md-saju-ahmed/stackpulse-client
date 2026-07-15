@@ -61,7 +61,12 @@ export function ProfileForm({
         >
           Name
         </label>
-        <Input id="profile-name" placeholder="Jane Doe" {...register("name")} />
+        <Input
+          id="profile-name"
+          placeholder="Jane Doe"
+          className="h-11"
+          {...register("name")}
+        />
         {errors.name && (
           <p className="mt-1 text-sm text-destructive">{errors.name.message}</p>
         )}
@@ -75,6 +80,7 @@ export function ProfileForm({
           id="profile-bio"
           placeholder="A short bio about yourself"
           rows={4}
+          className="h-11"
           {...register("bio")}
         />
         {errors.bio && (
@@ -93,6 +99,7 @@ export function ProfileForm({
           <Input
             id="profile-avatar"
             placeholder="https://example.com/avatar.png"
+            className="h-11"
             {...register("image")}
           />
           {errors.image && (
@@ -112,6 +119,7 @@ export function ProfileForm({
           <Input
             id="profile-website"
             placeholder="https://example.com"
+            className="h-11"
             {...register("websiteUrl")}
           />
           {errors.websiteUrl && (
@@ -132,6 +140,7 @@ export function ProfileForm({
         <Input
           id="profile-location"
           placeholder="City, Country"
+          className="h-11"
           {...register("location")}
         />
         {errors.location && (
@@ -145,7 +154,7 @@ export function ProfileForm({
         id="profile-form-submit"
         type="submit"
         disabled={submitting}
-        className="w-fit"
+        className="w-fit h-11"
       >
         {submitting ? "Saving…" : "Save changes"}
       </Button>
