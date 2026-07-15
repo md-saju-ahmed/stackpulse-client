@@ -31,9 +31,6 @@ export function PlatformStats() {
     <section className="bg-slate-50/40 py-12 md:py-16 border-y border-slate-100 backdrop-blur-xs">
       <Container>
         <Reveal>
-          <p className="text-center text-[10px] font-bold uppercase tracking-widest text-primary/80 mb-10">
-            StackPulse by the numbers — pulled live, not padded
-          </p>
           <div className="flex flex-wrap justify-around gap-8 text-center max-w-4xl mx-auto">
             <div className="group">
               {isLoading ? (
