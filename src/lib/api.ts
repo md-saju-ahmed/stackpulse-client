@@ -1,5 +1,3 @@
-import { env } from "@/env";
-
 export type ApiMeta = {
   total: number;
   page: number;
@@ -57,7 +55,7 @@ async function request<T>(
 ): Promise<{ data: T; meta?: ApiMeta }> {
   const { jwt, body, cache, revalidate } = options;
 
-  const url = `${env.NEXT_PUBLIC_API_URL}${path}`;
+  const url = path;
 
   const nextOptions: RequestInit["next"] =
     revalidate !== undefined ? { revalidate } : {};

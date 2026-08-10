@@ -1,14 +1,13 @@
 "use client";
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { env } from "@/env";
 import { AUTH_CHANGE_EVENT } from "@/lib/auth";
 import type { AuthUser } from "../types";
 
 export const SESSION_QUERY_KEY = ["auth", "session"] as const;
 
 async function fetchSession(): Promise<AuthUser | null> {
-  const res = await fetch(`${env.NEXT_PUBLIC_API_URL}/api/users/me`, {
+  const res = await fetch(`/api/users/me`, {
     credentials: "include",
   });
 

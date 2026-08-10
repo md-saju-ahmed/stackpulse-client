@@ -1,7 +1,6 @@
 "use client";
 import { api } from "@/lib/api";
 import { dispatchAuthChange } from "@/lib/auth";
-import { env } from "@/env";
 import type { AuthUser, LoginInput, RegisterInput } from "./types";
 
 type AuthResponse = {
@@ -22,7 +21,10 @@ export const authService = {
 
   async register(input: RegisterInput) {
     try {
-      const { data } = await api.post<AuthResponse>("/api/auth/register", input);
+      const { data } = await api.post<AuthResponse>(
+        "/api/auth/register",
+        input,
+      );
       dispatchAuthChange();
       return { data, error: null };
     } catch (err: unknown) {
@@ -34,7 +36,7 @@ export const authService = {
 
   async logout() {
     try {
-      await fetch(`${env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
+      await fetch(`/api/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
