@@ -12,12 +12,8 @@ export function useMe() {
 
   return useQuery({
     queryKey: ME_QUERY_KEY,
-    queryFn: () => {
-      if (!token) {
-        throw new Error("You must be signed in to view your profile.");
-      }
-      return userService.getMe(token);
-    },
-    enabled: isAuthenticated && !!token,
+    queryFn: () => userService.getMe(token),
+    enabled: isAuthenticated,
+    staleTime: 60 * 1000,
   });
 }

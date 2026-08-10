@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 import type { UpdateProfileInput, UserProfile } from "../types";
 
 function toUpdateProfileInput(values: ProfileFormSchema): UpdateProfileInput {
-  const input: UpdateProfileInput = {};
-  if (values.name) input.name = values.name;
-  if (values.bio) input.bio = values.bio;
-  if (values.image) input.image = values.image;
-  if (values.websiteUrl) input.websiteUrl = values.websiteUrl;
-  if (values.location) input.location = values.location;
-  return input;
+  return {
+    name: values.name || undefined,
+    bio: values.bio === "" ? null : values.bio,
+    image: values.image === "" ? null : values.image,
+    websiteUrl: values.websiteUrl === "" ? null : values.websiteUrl,
+    location: values.location === "" ? null : values.location,
+  };
 }
 
 type ProfileFormProps = {

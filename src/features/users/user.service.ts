@@ -21,7 +21,7 @@ function buildAdminUserQueryString(query?: AdminUserQuery): string {
 }
 
 export const userService = {
-  async getMe(jwt: string): Promise<{ data: UserProfile }> {
+  async getMe(jwt?: string | null): Promise<{ data: UserProfile }> {
     return api.get<UserProfile>("/api/users/me", { jwt });
   },
 
@@ -31,14 +31,14 @@ export const userService = {
 
   async updateMe(
     input: UpdateProfileInput,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: UserProfile }> {
     return api.patch<UserProfile>("/api/users/me", input, { jwt });
   },
 
   async listUsers(
     query: AdminUserQuery | undefined,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: AdminUser[]; meta?: PaginationMeta }> {
     return api.get<AdminUser[]>(
       `/api/users${buildAdminUserQueryString(query)}`,
@@ -46,21 +46,21 @@ export const userService = {
     );
   },
 
-  async approveUser(id: string, jwt: string): Promise<{ data: AdminUser }> {
+  async approveUser(id: string, jwt?: string | null): Promise<{ data: AdminUser }> {
     return api.patch<AdminUser>(`/api/users/${id}/approve`, undefined, { jwt });
   },
 
-  async suspendUser(id: string, jwt: string): Promise<{ data: AdminUser }> {
+  async suspendUser(id: string, jwt?: string | null): Promise<{ data: AdminUser }> {
     return api.patch<AdminUser>(`/api/users/${id}/suspend`, undefined, { jwt });
   },
 
-  async unsuspendUser(id: string, jwt: string): Promise<{ data: AdminUser }> {
+  async unsuspendUser(id: string, jwt?: string | null): Promise<{ data: AdminUser }> {
     return api.patch<AdminUser>(`/api/users/${id}/unsuspend`, undefined, {
       jwt,
     });
   },
 
-  async deleteUser(id: string, jwt: string): Promise<{ data: AdminUser }> {
+  async deleteUser(id: string, jwt?: string | null): Promise<{ data: AdminUser }> {
     return api.delete<AdminUser>(`/api/users/${id}`, { jwt });
   },
 };

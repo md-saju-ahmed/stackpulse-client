@@ -1,31 +1,35 @@
+export type AccountStatus = "PENDING" | "APPROVED" | "SUSPENDED" | "DELETED";
+
 export type UserProfile = {
-  _id: string;
+  /** Prisma/PostgreSQL backend field */
+  id: string;
   name?: string;
   email?: string;
   image?: string;
   bio?: string;
   websiteUrl?: string;
   location?: string;
+  role: "USER" | "ADMIN";
+  accountStatus: AccountStatus;
   createdAt: string;
   updatedAt: string;
 };
 
 export type UpdateProfileInput = {
   name?: string;
-  bio?: string;
-  image?: string;
-  websiteUrl?: string;
-  location?: string;
+  bio?: string | null;
+  image?: string | null;
+  websiteUrl?: string | null;
+  location?: string | null;
 };
 
-export type AccountStatus = "pending" | "approved" | "suspended" | "deleted";
-
 export type AdminUser = {
-  _id: string;
+  /** Prisma/PostgreSQL backend field */
+  id: string;
   name?: string;
   email?: string;
   image?: string;
-  role: "user" | "admin";
+  role: "USER" | "ADMIN";
   accountStatus: AccountStatus;
   createdAt: string;
 };
