@@ -1,10 +1,8 @@
 "use client";
 
-import { createAuthClient } from "better-auth/react";
-import { jwtClient } from "better-auth/client/plugins";
+export const AUTH_CHANGE_EVENT = "stackpulse_auth_changed";
 
-export const authClient = createAuthClient({
-  plugins: [jwtClient()],
-});
-
-export const { signIn, signUp, signOut, useSession } = authClient;
+export function dispatchAuthChange(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(AUTH_CHANGE_EVENT));
+}
