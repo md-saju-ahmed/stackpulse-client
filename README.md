@@ -84,7 +84,7 @@ This repository contains the Next.js client. It renders the public catalog, the 
 | Layer            | Technology                                                                                              |
 | ---------------- | ------------------------------------------------------------------------------------------------------- |
 | Frontend         | Next.js 16 (App Router), React 19, TypeScript                                                           |
-| Backend          | External API (consumed via `NEXT_PUBLIC_API_URL`); not part of this repository                          |
+| Backend          | External API, proxied through Next.js rewrites (`API_URL`); not part of this repository                 |
 | Authentication   | Custom JWT issued by the backend, held in an httpOnly cookie — no auth library or database in this repo |
 | Validation       | Zod, React Hook Form with `@hookform/resolvers`                                                         |
 | Styling          | Tailwind CSS v4, `tw-animate-css`                                                                       |
@@ -99,7 +99,9 @@ This app does not use a database or an auth library (e.g. Better Auth) itself �
 
 The application follows a feature-based structure. Route handling and layout live under `src/app` using the Next.js App Router, while domain logic (types, API service calls, and hooks) is grouped by feature under `src/features`. Shared UI primitives live in `src/components`, with base shadcn/ui components isolated in `src/components/ui`.
 
-Data fetching and caching are handled by TanStack React Query, with each feature exposing its own hooks (for example `useProducts`, `useMyBookmarks`) that wrap a corresponding `*.service.ts` module. Service modules are the only place that call the external API, through the shared `api` client in `src/lib/api.ts`.
+Data fetching and caching are handled by TanStack React Query, with each feature exposing its own hooks (for example `useProducts`, `useMyBookmarks`) that wrap a corresponding `*.service.ts` module. Service modules are the only place that call the API, through the shared `api` client in `src/lib/api.ts`.
+
+The browser never talks to the backend directly. `api.ts` and the auth service call same-origin, relative `/api/*` paths; a `rewrites()` rule in `next.config.ts` proxies those requests server-side to the backend at `API_URL`. This keeps all API traffic same-origin from the browser's perspective, which avoids cross-site cookie issues with the auth cookie.
 
 Authentication is delegated entirely to the backend: `authService` (`src/features/auth/auth.service.ts`) calls the backend's `POST /api/auth/login` / `POST /api/auth/register`, which set the JWT as an httpOnly cookie on their response — the client never sees the token itself. `useAuth` (`src/features/auth/hooks/useAuth.ts`) determines the current session by calling `GET /api/users/me` with `credentials: "include"`, letting the backend read its own cookie. Route protection (which pages require a session, and which require an admin role) is enforced in `src/proxy.ts`, which Next.js uses as middleware and which reads that same cookie server-side.
 
@@ -140,19 +142,19 @@ Install dependencies:
 npm install
 ```
 
-This repository contains only the Next.js client. Authentication, and all product, category, review, bookmark, and user data, are provided by a separate backend service, which must be running and reachable at the URL configured in `NEXT_PUBLIC_API_URL`.
+This repository contains only the Next.js client. Authentication, and all product, category, review, bookmark, and user data, are provided by a separate backend service, which must be running and reachable at the URL configured in `API_URL`.
 
 ### Environment Variables
 
-| Variable                    | Description                                                         |
-| --------------------------- | ------------------------------------------------------------------- |
-| `NEXT_PUBLIC_API_URL`       | Base URL of the backend API. Defaults to `http://localhost:5000`.   |
-| `NEXT_PUBLIC_DEMO_EMAIL`    | Email address used to pre-fill or display a demo account. Required. |
-| `NEXT_PUBLIC_DEMO_PASSWORD` | Password used alongside the demo account. Required.                 |
+| Variable                    | Description                                                                                                                                                   |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `API_URL`                   | Server-side base URL of the backend API, used by the `rewrites()` proxy in `next.config.ts`. Defaults to `http://localhost:5000`. Not exposed to the browser. |
+| `NEXT_PUBLIC_DEMO_EMAIL`    | Email address used to pre-fill or display a demo account. Required.                                                                                           |
+| `NEXT_PUBLIC_DEMO_PASSWORD` | Password used alongside the demo account. Required.                                                                                                           |
 
 Environment variables are validated at startup via `src/env.ts`; the application will throw a descriptive error if a required variable is missing or invalid.
 
-In production, the backend's `CLIENT_URL`, `COOKIE_DOMAIN`, and `COOKIE_SAMESITE` settings must be configured so the auth cookie it sets is actually delivered back to this app and to the API on subsequent requests — see the server README's Authentication section.
+In production, the backend's `CLIENT_URL` setting must still be configured so it accepts requests forwarded from this app's server. Because the browser now talks to this app's own origin and the proxy forwards to the backend server-side, the auth cookie only needs to round-trip between this app and the browser — cross-site `COOKIE_DOMAIN`/`COOKIE_SAMESITE` configuration is no longer required for that leg.
 
 ### Running Locally
 
@@ -176,14 +178,14 @@ Authentication is fully delegated to the backend — this app holds no session s
 
 - **Sign-up / sign-in**: `authService.login` / `authService.register` (`src/features/auth/auth.service.ts`) POST to the backend's `/api/auth/login` and `/api/auth/register`. The backend sets the JWT as an httpOnly, Secure cookie on its response; the client never receives the token in the response body and has no way to read, copy, or persist it itself.
 - **Session lookup**: `useAuth` (`src/features/auth/hooks/useAuth.ts`) calls `GET /api/users/me` with `credentials: "include"` on mount and whenever a `stackpulse_auth_changed` event fires (dispatched by `src/lib/auth.ts` after login, register, logout, or a 401 response). The backend reads its own cookie to answer that request — the client is just relaying the browser's automatic cookie attachment.
-- **Logout**: `authService.logout` POSTs to `/api/auth/logout`, which clears the cookie server-side (client JS cannot clear an httpOnly cookie itself).
+- **Logout**: `authService.logout` POSTs to the relative `/api/auth/logout` path (proxied to the backend by the `rewrites()` rule in `next.config.ts`), which clears the cookie server-side (client JS cannot clear an httpOnly cookie itself).
 - **Protected routes**: `src/proxy.ts` runs as Next.js middleware. It reads the same httpOnly cookie directly off the incoming request (server-side code can read httpOnly cookies fine — the restriction is only on browser JS/`document.cookie`), redirects unauthenticated users to `/login` with a `callbackUrl`, and redirects authenticated users away from `/login` and `/register`.
 - **Admin-only routes**: `/dashboard/pending`, `/dashboard/categories`, and `/dashboard/users` additionally require the `admin` role at the middleware level, and are further guarded client-side by the `AdminGuard` component.
 - **`useJwtToken`**: kept as a compatibility shim for existing call sites that still destructure a `token` — it always returns `null` now, since there is no client-readable token. Passing it through to `api.*` calls is a harmless no-op; authorization happens via the cookie instead.
 
 ## API Overview
 
-All authentication, product, category, review, bookmark, and user data is served by an external backend API, reachable at `NEXT_PUBLIC_API_URL`. Requests are made through a shared `api` client (`src/lib/api.ts`) that always sends `credentials: "include"` (so the httpOnly auth cookie is attached) and expects a consistent `{ success, message, data, meta? }` response shape.
+All authentication, product, category, review, bookmark, and user data is served by an external backend API. The browser calls this app's own same-origin `/api/*` paths; `next.config.ts` rewrites those requests server-side to the backend at `API_URL`, so the backend URL itself is never exposed to client code. Requests are made through a shared `api` client (`src/lib/api.ts`) that always sends `credentials: "include"` (so the httpOnly auth cookie is attached) and expects a consistent `{ success, message, data, meta? }` response shape.
 
 Service modules under `src/features/*/*.service.ts` group the endpoints by domain:
 
@@ -231,7 +233,7 @@ stackpulse-client/
 
 No deployment configuration (such as a Dockerfile, CI workflow, or platform-specific config) is included in this repository. The application is a standard Next.js app and can be built with `npm run build` and started with `npm run start`. The backend API is deployed and hosted separately from this client.
 
-For the httpOnly auth cookie to round-trip correctly in production, the backend's `CLIENT_URL` must point at this app's deployed origin, and — if the client and API are on different subdomains rather than `localhost` — the backend's `COOKIE_DOMAIN` needs to be set to a shared parent domain (or `COOKIE_SAMESITE=none` with HTTPS on both sides) so the cookie the API sets is actually sent back both to the API and to this app's own middleware.
+Because the browser only ever talks to this app's own origin (`/api/*` requests are proxied server-side to the backend via the `rewrites()` rule in `next.config.ts`, driven by `API_URL`), the auth cookie set by the backend's response is forwarded back to the browser as if it came from this app — no cross-site cookie configuration is needed between the browser and this app. The backend's `CLIENT_URL` should still point at this app's deployed origin so its own CORS/cookie settings accept the proxied requests.
 
 ## Performance Considerations
 
