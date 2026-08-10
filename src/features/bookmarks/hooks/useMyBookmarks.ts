@@ -14,13 +14,8 @@ export function useMyBookmarks(query?: BookmarkQuery) {
 
   return useQuery({
     queryKey: BOOKMARKS_LIST_QUERY_KEY(query),
-    queryFn: () => {
-      if (!token) {
-        throw new Error("You must be signed in to view bookmarks.");
-      }
-      return bookmarkService.getMyBookmarks(query, token);
-    },
-    enabled: isAuthenticated && !!token,
+    queryFn: () => bookmarkService.getMyBookmarks(query, token),
+    enabled: isAuthenticated,
     placeholderData: keepPreviousData,
   });
 }

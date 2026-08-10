@@ -1,5 +1,6 @@
 export type Bookmark = {
-  _id: string;
+  /** Prisma/PostgreSQL backend field */
+  id: string;
   userId: string;
   productId: string;
   createdAt: string;
