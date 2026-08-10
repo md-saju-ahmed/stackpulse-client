@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { isAdminUser } from "@/lib/auth-utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type AdminGuardProps = {
@@ -16,12 +17,12 @@ export function AdminGuard({ children }: AdminGuardProps) {
   useEffect(() => {
     if (isLoading) return;
 
-    if (user?.role !== "admin") {
+    if (!isAdminUser(user)) {
       router.replace("/dashboard");
     }
   }, [isLoading, user, router]);
 
-  if (isLoading || user?.role !== "admin") {
+  if (isLoading || !isAdminUser(user)) {
     return (
       <div className="flex flex-col gap-4">
         <Skeleton className="h-8 w-1/3" />
