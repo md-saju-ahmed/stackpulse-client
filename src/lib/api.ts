@@ -31,10 +31,7 @@ export class ApiError extends Error {
   }
 }
 
-// Always branch on `ApiError.status` (the numeric HTTP status code),
-// never on `error.message` text. The status code is part of the stable
-// contract; the message may change and is only for display.
-function buildHeaders(options: { jwt?: string }): HeadersInit {
+function buildHeaders(options: { jwt?: string | null }): HeadersInit {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
@@ -47,7 +44,7 @@ function buildHeaders(options: { jwt?: string }): HeadersInit {
 }
 
 type RequestOptions = {
-  jwt?: string;
+  jwt?: string | null;
   body?: unknown;
   cache?: RequestCache;
   revalidate?: number;
@@ -68,6 +65,7 @@ async function request<T>(
   const response = await fetch(url, {
     method,
     headers: buildHeaders({ jwt }),
+    credentials: "include",
     body: body !== undefined ? JSON.stringify(body) : undefined,
     cache,
     next: Object.keys(nextOptions).length > 0 ? nextOptions : undefined,
@@ -80,6 +78,11 @@ async function request<T>(
   const json = (await response.json()) as ApiResponse<T>;
 
   if (!json.success) {
+    if (response.status === 401 && typeof window !== "undefined") {
+      const { dispatchAuthChange } = await import("./auth");
+      dispatchAuthChange();
+      window.location.href = `/login?callbackUrl=${encodeURIComponent(window.location.pathname)}`;
+    }
     throw new ApiError(response.status, json.message);
   }
 
