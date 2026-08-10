@@ -67,7 +67,7 @@ async function request<T>(
     headers: buildHeaders({ jwt }),
     credentials: "include",
     body: body !== undefined ? JSON.stringify(body) : undefined,
-    cache,
+    cache: cache ?? "no-store",
     next: Object.keys(nextOptions).length > 0 ? nextOptions : undefined,
   });
 
