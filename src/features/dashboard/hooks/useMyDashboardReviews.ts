@@ -14,13 +14,8 @@ export function useMyDashboardReviews(query?: DashboardListQuery) {
 
   return useQuery({
     queryKey: MY_DASHBOARD_REVIEWS_QUERY_KEY(query),
-    queryFn: () => {
-      if (!token) {
-        throw new Error("You must be signed in to view your reviews.");
-      }
-      return dashboardService.getReviews(query, token);
-    },
-    enabled: isAuthenticated && !!token,
+    queryFn: () => dashboardService.getReviews(query, token),
+    enabled: isAuthenticated,
     placeholderData: keepPreviousData,
   });
 }

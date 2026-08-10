@@ -14,13 +14,8 @@ export function useMyProducts(query?: DashboardListQuery) {
 
   return useQuery({
     queryKey: MY_PRODUCTS_QUERY_KEY(query),
-    queryFn: () => {
-      if (!token) {
-        throw new Error("You must be signed in to view your products.");
-      }
-      return dashboardService.getOwnedProducts(query, token);
-    },
-    enabled: isAuthenticated && !!token,
+    queryFn: () => dashboardService.getOwnedProducts(query, token),
+    enabled: isAuthenticated,
     placeholderData: keepPreviousData,
   });
 }

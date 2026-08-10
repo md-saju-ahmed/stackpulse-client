@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { isAdminUser } from "@/lib/auth-utils";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -79,7 +80,7 @@ export function DashboardNav({ onNavigate }: DashboardNavProps) {
   const pathname = usePathname();
   const { user } = useAuth();
 
-  const isAdmin = user?.role === "admin";
+  const isAdmin = isAdminUser(user);
 
   const items = NAV_ITEMS.filter((item) => {
     if (item.adminOnly && !isAdmin) return false;

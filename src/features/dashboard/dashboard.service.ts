@@ -20,18 +20,18 @@ function buildListQueryString(query?: DashboardListQuery): string {
 }
 
 export const dashboardService = {
-  async getOverview(jwt: string): Promise<{ data: DashboardOverview }> {
+  async getOverview(jwt?: string | null): Promise<{ data: DashboardOverview }> {
     return api.get<DashboardOverview>("/api/dashboard/overview", { jwt });
   },
 
   // Admin-only
-  async getAdminOverview(jwt: string): Promise<{ data: PlatformOverview }> {
+  async getAdminOverview(jwt?: string | null): Promise<{ data: PlatformOverview }> {
     return api.get<PlatformOverview>("/api/dashboard/admin-overview", { jwt });
   },
 
   async getOwnedProducts(
     query: DashboardListQuery | undefined,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Product[]; meta?: PaginationMeta }> {
     return api.get<Product[]>(
       `/api/dashboard/products${buildListQueryString(query)}`,
@@ -41,14 +41,14 @@ export const dashboardService = {
 
   async getOwnedProductBySlug(
     slug: string,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Product }> {
     return api.get<Product>(`/api/dashboard/products/${slug}`, { jwt });
   },
 
   async getReviews(
     query: DashboardListQuery | undefined,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Review[]; meta?: PaginationMeta }> {
     return api.get<Review[]>(
       `/api/dashboard/reviews${buildListQueryString(query)}`,

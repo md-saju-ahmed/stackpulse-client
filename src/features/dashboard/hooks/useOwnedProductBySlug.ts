@@ -15,15 +15,12 @@ export function useOwnedProductBySlug(slug: string) {
   return useQuery({
     queryKey: OWNED_PRODUCT_QUERY_KEY(slug),
     queryFn: async (): Promise<Product> => {
-      if (!token) {
-        throw new Error("You must be signed in to view your products.");
-      }
       const { data } = await dashboardService.getOwnedProductBySlug(
         slug,
         token,
       );
       return data;
     },
-    enabled: isAuthenticated && !!token && slug.length > 0,
+    enabled: isAuthenticated && slug.length > 0,
   });
 }
