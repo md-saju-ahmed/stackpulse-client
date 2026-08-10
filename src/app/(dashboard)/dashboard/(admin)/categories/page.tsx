@@ -126,9 +126,9 @@ export default function AdminCategoriesPage() {
               <div className="mb-4 flex items-start gap-2 rounded-lg border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800 dark:border-yellow-700 dark:bg-yellow-950 dark:text-yellow-300">
                 <TriangleAlertIcon className="mt-0.5 size-4 shrink-0" />
                 <span>
-                  Renaming this category will update the category reference on
-                  every product filed under it. This may take a moment for large
-                  catalogues.
+                  Renaming this category changes its URL slug. Products stay
+                  filed under it automatically — no product data needs to be
+                  updated.
                 </span>
               </div>
             )}

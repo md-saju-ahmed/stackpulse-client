@@ -10,12 +10,7 @@ export function useCreateCategory() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: CreateCategoryInput) => {
-      if (!token) {
-        throw new Error("You must be signed in to create a category.");
-      }
-      return categoryService.createCategory(input, token);
-    },
+    mutationFn: (input: CreateCategoryInput) => categoryService.createCategory(input, token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories", "list"] });
     },

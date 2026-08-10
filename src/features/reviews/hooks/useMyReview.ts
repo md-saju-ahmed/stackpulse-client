@@ -14,12 +14,7 @@ export function useMyReview(productSlug: string) {
 
   return useQuery({
     queryKey: MY_REVIEW_QUERY_KEY(productSlug),
-    queryFn: () => {
-      if (!token) {
-        throw new Error("You must be signed in to view your review.");
-      }
-      return reviewService.getMyReview(productSlug, token);
-    },
-    enabled: isAuthenticated && !!token && !!productSlug,
+    queryFn: () => reviewService.getMyReview(productSlug, token),
+    enabled: isAuthenticated && !!productSlug,
   });
 }

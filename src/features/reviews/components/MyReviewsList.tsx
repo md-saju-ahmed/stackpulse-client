@@ -40,7 +40,7 @@ export function MyReviewsList({ query, onPageChange }: MyReviewsListProps) {
   return (
     <div className="flex flex-col gap-4">
       {reviews.map((review) => (
-        <ReviewCard key={review._id} review={review} />
+        <ReviewCard key={review.id} review={review} />
       ))}
       {data?.meta && (
         <Pagination meta={data.meta} onPageChange={onPageChange} />

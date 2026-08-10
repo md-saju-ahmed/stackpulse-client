@@ -18,7 +18,7 @@ function buildBookmarkQueryString(query?: BookmarkQuery): string {
 export const bookmarkService = {
   async addBookmark(
     productSlug: string,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Bookmark }> {
     return api.post<Bookmark>(`/api/bookmarks/${productSlug}`, undefined, {
       jwt,
@@ -27,14 +27,14 @@ export const bookmarkService = {
 
   async removeBookmark(
     productSlug: string,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: undefined }> {
     return api.delete<undefined>(`/api/bookmarks/${productSlug}`, { jwt });
   },
 
   async getMyBookmarks(
     query: BookmarkQuery | undefined,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Product[]; meta?: PaginationMeta }> {
     return api.get<Product[]>(
       `/api/bookmarks${buildBookmarkQueryString(query)}`,
@@ -42,7 +42,7 @@ export const bookmarkService = {
     );
   },
 
-  async getBookmarkedSlugs(jwt: string): Promise<{ data: string[] }> {
+  async getBookmarkedSlugs(jwt?: string | null): Promise<{ data: string[] }> {
     return api.get<string[]>("/api/bookmarks/slugs", { jwt });
   },
 };

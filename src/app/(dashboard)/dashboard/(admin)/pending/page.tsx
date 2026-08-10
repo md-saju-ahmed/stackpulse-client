@@ -230,7 +230,7 @@ export default function AdminProductsPage() {
         <div className="flex flex-col gap-3">
           {products.map((product) => (
             <PendingProductCard
-              key={product._id}
+              key={product.id}
               product={product}
               onApprove={() => setAction({ product, kind: "approve" })}
               onReject={() => setAction({ product, kind: "reject" })}

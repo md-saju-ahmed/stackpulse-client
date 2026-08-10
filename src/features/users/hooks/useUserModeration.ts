@@ -4,18 +4,13 @@ import { useJwtToken } from "@/features/auth/hooks/useJwtToken";
 import { userService } from "../user.service";
 
 function useUserMutation(
-  mutationFn: (id: string, jwt: string) => Promise<unknown>,
+  mutationFn: (id: string, jwt?: string | null) => Promise<unknown>,
 ) {
   const { token } = useJwtToken();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => {
-      if (!token) {
-        throw new Error("You must be signed in to manage users.");
-      }
-      return mutationFn(id, token);
-    },
+    mutationFn: (id: string) => mutationFn(id, token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users", "admin"] });
       queryClient.invalidateQueries({

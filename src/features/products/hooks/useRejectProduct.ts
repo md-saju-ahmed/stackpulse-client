@@ -8,12 +8,7 @@ export function useRejectProduct() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (slug: string) => {
-      if (!token) {
-        throw new Error("You must be signed in to reject products.");
-      }
-      return productService.rejectProduct(slug, token);
-    },
+    mutationFn: (slug: string) => productService.rejectProduct(slug, token),
     onSuccess: (_result, slug) => {
       queryClient.invalidateQueries({ queryKey: ["products", "admin"] });
       queryClient.invalidateQueries({ queryKey: ["products", "detail", slug] });

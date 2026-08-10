@@ -2,8 +2,8 @@ export type AuthUser = {
   id: string;
   name: string;
   email: string;
-  role: string;
-  accountStatus: "pending" | "approved" | "suspended" | "deleted";
+  role: "USER" | "ADMIN";
+  accountStatus: "PENDING" | "APPROVED" | "SUSPENDED" | "DELETED";
   image?: string | null;
 };
 

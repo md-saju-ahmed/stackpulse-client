@@ -10,12 +10,7 @@ export function useDeleteReview(productSlug: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => {
-      if (!token) {
-        throw new Error("You must be signed in to delete your review.");
-      }
-      return reviewService.deleteReview(productSlug, token);
-    },
+    mutationFn: () => reviewService.deleteReview(productSlug, token),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["reviews", productSlug, "list"],

@@ -1,6 +1,22 @@
 "use client";
-import { useSession } from "@/lib/auth";
+import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { env } from "@/env";
+import { AUTH_CHANGE_EVENT } from "@/lib/auth";
 import type { AuthUser } from "../types";
+
+export const SESSION_QUERY_KEY = ["auth", "session"] as const;
+
+async function fetchSession(): Promise<AuthUser | null> {
+  const res = await fetch(`${env.NEXT_PUBLIC_API_URL}/api/users/me`, {
+    credentials: "include",
+  });
+
+  if (!res.ok) return null;
+
+  const json = (await res.json()) as { success: boolean; data?: AuthUser };
+  return json.success && json.data ? json.data : null;
+}
 
 export type UseAuthReturn = {
   user: AuthUser | null;
@@ -9,24 +25,28 @@ export type UseAuthReturn = {
 };
 
 export function useAuth(): UseAuthReturn {
-  const { data, isPending } = useSession();
+  const queryClient = useQueryClient();
 
-  const user: AuthUser | null = data?.user
-    ? {
-        id: data.user.id,
-        name: data.user.name,
-        email: data.user.email,
-        role: (data.user as { role?: string }).role ?? "user",
-        accountStatus:
-          (data.user as { accountStatus?: AuthUser["accountStatus"] })
-            .accountStatus ?? "pending",
-        image: data.user.image,
-      }
-    : null;
+  const { data, isLoading } = useQuery({
+    queryKey: SESSION_QUERY_KEY,
+    queryFn: fetchSession,
+    retry: false,
+  });
+
+  useEffect(() => {
+    function onAuthChange() {
+      void queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
+    }
+
+    window.addEventListener(AUTH_CHANGE_EVENT, onAuthChange);
+    return () => {
+      window.removeEventListener(AUTH_CHANGE_EVENT, onAuthChange);
+    };
+  }, [queryClient]);
 
   return {
-    user,
-    isLoading: isPending,
-    isAuthenticated: user !== null,
+    user: data ?? null,
+    isLoading,
+    isAuthenticated: Boolean(data),
   };
 }

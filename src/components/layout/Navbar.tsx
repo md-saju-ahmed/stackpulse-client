@@ -13,6 +13,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useMe } from "@/features/users/hooks/useMe";
 import { authService } from "@/features/auth/auth.service";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -49,6 +50,13 @@ const navLinks = [
 
 export function Navbar() {
   const { user, isLoading, isAuthenticated } = useAuth();
+  const { data: meData } = useMe();
+  const me = meData?.data;
+
+  const displayName = me?.name || user?.name || "";
+  const displayEmail = me?.email || user?.email || "";
+  const displayImage = me?.image || user?.image || null;
+
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -64,9 +72,10 @@ export function Navbar() {
   }
 
   function getInitials(name: string) {
+    if (!name) return "";
     return name
       .split(" ")
-      .map((n) => n[0])
+      .map((n) => n?.[0] || "")
       .join("")
       .toUpperCase()
       .slice(0, 2);
@@ -278,13 +287,13 @@ export function Navbar() {
                 <DropdownMenuTrigger className="flex items-center gap-2 h-11 rounded-lg px-3 py-2 transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <Avatar size="sm">
                     <AvatarImage
-                      src={user.image || getAvatarUrl(user.name)}
-                      alt={user.name}
+                      src={displayImage || getAvatarUrl(displayName)}
+                      alt={displayName}
                     />
-                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                    <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
                   </Avatar>
                   <span className="hidden text-sm font-medium md:inline">
-                    {user.name.split(" ")[0]}
+                    {displayName.split(" ")[0]}
                   </span>
                 </DropdownMenuTrigger>
 
@@ -299,19 +308,19 @@ export function Navbar() {
                       <div className="flex items-center gap-3">
                         <Avatar size="lg" className="shrink-0">
                           <AvatarImage
-                            src={user.image || getAvatarUrl(user.name)}
-                            alt={user.name}
+                            src={displayImage || getAvatarUrl(displayName)}
+                            alt={displayName}
                           />
                           <AvatarFallback>
-                            {getInitials(user.name)}
+                            {getInitials(displayName)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col space-y-0.5 min-w-0">
                           <p className="text-sm font-medium leading-none truncate">
-                            {user.name}
+                            {displayName}
                           </p>
                           <p className="text-xs leading-none text-muted-foreground truncate">
-                            {user.email}
+                            {displayEmail}
                           </p>
                         </div>
                       </div>

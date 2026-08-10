@@ -13,14 +13,10 @@ export function useBookmarkedSlugs() {
   return useQuery({
     queryKey: BOOKMARKED_SLUGS_QUERY_KEY,
     queryFn: async () => {
-      if (!token) {
-        throw new Error("You must be signed in to view bookmarks.");
-      }
-
       const { data: slugs } = await bookmarkService.getBookmarkedSlugs(token);
       return new Set<string>(slugs);
     },
-    enabled: isAuthenticated && !!token,
+    enabled: isAuthenticated,
     staleTime: 30_000,
   });
 }

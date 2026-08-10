@@ -19,7 +19,7 @@ export function CategoryTable({
   return (
     <div className="flex flex-col gap-3">
       {categories.map((category) => (
-        <Card key={category._id}>
+        <Card key={category.id}>
           <CardHeader className="flex-row items-center gap-3">
             {category.icon && (
               <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-lg">

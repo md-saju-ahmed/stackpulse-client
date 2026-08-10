@@ -20,9 +20,6 @@ export function useToggleBookmark(slug: string) {
 
   const mutation = useMutation<void, Error, void, MutationContext>({
     mutationFn: async () => {
-      if (!token) {
-        throw new Error("You must be signed in to bookmark a tool.");
-      }
       if (isBookmarked) {
         await bookmarkService.removeBookmark(slug, token);
       } else {

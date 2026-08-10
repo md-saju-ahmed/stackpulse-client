@@ -8,12 +8,7 @@ export function useDeleteProduct() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (slug: string) => {
-      if (!token) {
-        throw new Error("You must be signed in to delete this tool.");
-      }
-      return productService.deleteProduct(slug, token);
-    },
+    mutationFn: (slug: string) => productService.deleteProduct(slug, token),
     onSuccess: (_result, slug) => {
       queryClient.invalidateQueries({ queryKey: ["dashboard", "products"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard", "overview"] });

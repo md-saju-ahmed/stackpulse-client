@@ -11,12 +11,7 @@ export function useUpdateProduct(slug: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: UpdateProductInput) => {
-      if (!token) {
-        throw new Error("You must be signed in to edit this tool.");
-      }
-      return productService.updateProduct(slug, input, token);
-    },
+    mutationFn: (input: UpdateProductInput) => productService.updateProduct(slug, input, token),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: PRODUCT_DETAIL_QUERY_KEY(slug),

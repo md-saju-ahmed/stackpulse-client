@@ -12,13 +12,8 @@ export function useDashboardOverview() {
 
   return useQuery({
     queryKey: DASHBOARD_OVERVIEW_QUERY_KEY,
-    queryFn: () => {
-      if (!token) {
-        throw new Error("You must be signed in to view your dashboard.");
-      }
-      return dashboardService.getOverview(token);
-    },
-    enabled: isAuthenticated && !!token,
+    queryFn: () => dashboardService.getOverview(token),
+    enabled: isAuthenticated,
     staleTime: 30 * 1000,
   });
 }

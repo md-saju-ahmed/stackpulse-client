@@ -2,6 +2,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useJwtToken } from "@/features/auth/hooks/useJwtToken";
+import { isAdminUser } from "@/lib/auth-utils";
 import { productService } from "../product.service";
 import type { AdminProductQuery } from "../types";
 
@@ -14,13 +15,8 @@ export function usePendingProducts(query?: AdminProductQuery) {
 
   return useQuery({
     queryKey: PENDING_PRODUCTS_QUERY_KEY(query),
-    queryFn: () => {
-      if (!token) {
-        throw new Error("You must be signed in to view pending products.");
-      }
-      return productService.getPendingProducts(query, token);
-    },
-    enabled: user?.role === "admin" && !!token,
+    queryFn: () => productService.getPendingProducts(query, token),
+    enabled: isAdminUser(user),
     placeholderData: keepPreviousData,
   });
 }

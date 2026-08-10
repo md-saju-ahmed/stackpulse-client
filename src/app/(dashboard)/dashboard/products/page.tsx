@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PackageSearchIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { isAdminUser } from "@/lib/auth-utils";
 import { useMyProducts } from "@/features/dashboard/hooks/useMyProducts";
 import { useDeleteProduct } from "@/features/products/hooks/useDeleteProduct";
 import { useResubmitProduct } from "@/features/products/hooks/useResubmitProduct";
@@ -35,11 +36,11 @@ export default function MyProductsPage() {
   const products = data?.data ?? [];
   const meta = data?.meta;
   const canSubmit =
-    user?.accountStatus === "approved" || user?.role === "admin";
+    user?.accountStatus === "APPROVED" || isAdminUser(user);
   const submitBlockReason =
-    user?.accountStatus === "pending"
+    user?.accountStatus === "PENDING"
       ? "Your account is pending approval"
-      : user?.accountStatus === "suspended"
+      : user?.accountStatus === "SUSPENDED"
         ? "Your account has been suspended"
         : undefined;
 

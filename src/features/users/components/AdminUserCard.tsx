@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { isAdminUser } from "@/lib/auth-utils";
 import type { AdminUser } from "../types";
 
 type AdminUserCardProps = {
@@ -20,10 +21,10 @@ const STATUS_BADGE_VARIANT: Record<
   AdminUser["accountStatus"],
   "default" | "secondary" | "destructive" | "outline"
 > = {
-  pending: "outline",
-  approved: "default",
-  suspended: "secondary",
-  deleted: "destructive",
+  PENDING: "outline",
+  APPROVED: "default",
+  SUSPENDED: "secondary",
+  DELETED: "destructive",
 };
 
 export function AdminUserCard({
@@ -36,7 +37,7 @@ export function AdminUserCard({
   isBusy,
 }: AdminUserCardProps) {
   const initials = (user.name ?? user.email ?? "?").slice(0, 2).toUpperCase();
-  const isDeleted = user.accountStatus === "deleted";
+  const isDeleted = user.accountStatus === "DELETED";
 
   return (
     <Card>
@@ -64,7 +65,7 @@ export function AdminUserCard({
           <Badge variant={STATUS_BADGE_VARIANT[user.accountStatus]}>
             {user.accountStatus}
           </Badge>
-          {user.role === "admin" && <Badge variant="outline">Admin</Badge>}
+          {isAdminUser(user) && <Badge variant="outline">Admin</Badge>}
           <span className="text-xs text-muted-foreground">
             Joined{" "}
             {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })}
@@ -73,10 +74,10 @@ export function AdminUserCard({
 
         {!isDeleted && !isSelf && (
           <div className="flex items-center gap-2">
-            {(user.accountStatus === "pending" ||
-              user.accountStatus === "suspended") && (
+            {(user.accountStatus === "PENDING" ||
+              user.accountStatus === "SUSPENDED") && (
               <Button
-                id={`admin-user-approve-${user._id}`}
+                id={`admin-user-approve-${user.id}`}
                 variant="default"
                 size="sm"
                 disabled={isBusy}
@@ -86,9 +87,9 @@ export function AdminUserCard({
                 Approve
               </Button>
             )}
-            {user.accountStatus === "approved" && (
+            {user.accountStatus === "APPROVED" && (
               <Button
-                id={`admin-user-suspend-${user._id}`}
+                id={`admin-user-suspend-${user.id}`}
                 variant="outline"
                 size="sm"
                 disabled={isBusy}
@@ -98,9 +99,9 @@ export function AdminUserCard({
                 Suspend
               </Button>
             )}
-            {user.accountStatus === "suspended" && (
+            {user.accountStatus === "SUSPENDED" && (
               <Button
-                id={`admin-user-unsuspend-${user._id}`}
+                id={`admin-user-unsuspend-${user.id}`}
                 variant="outline"
                 size="sm"
                 disabled={isBusy}
@@ -111,7 +112,7 @@ export function AdminUserCard({
               </Button>
             )}
             <Button
-              id={`admin-user-delete-${user._id}`}
+              id={`admin-user-delete-${user.id}`}
               variant="destructive"
               size="sm"
               disabled={isBusy}

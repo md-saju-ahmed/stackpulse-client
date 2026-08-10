@@ -1,5 +1,7 @@
 "use client";
+import { useEffect } from "react";
 import type { ReactNode } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -9,6 +11,15 @@ type AuthGuardProps = {
 
 export function AuthGuard({ children }: AuthGuardProps) {
   const { isLoading, isAuthenticated } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      const loginUrl = `/login?callbackUrl=${encodeURIComponent(pathname)}`;
+      router.push(loginUrl);
+    }
+  }, [isLoading, isAuthenticated, router, pathname]);
 
   if (isLoading || !isAuthenticated) {
     return (

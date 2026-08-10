@@ -5,12 +5,12 @@ export type ProductPricing = "FREE" | "FREEMIUM" | "PAID" | "OPEN_SOURCE";
 export type ProductSortField =
   | "createdAt"
   | "averageRating"
-  | "viewCount"
   | "reviewCount"
   | "bookmarkCount";
 
 export type Product = {
-  _id: string;
+  /** Prisma/PostgreSQL backend field */
+  id: string;
   name: string;
   slug: string;
   tagline: string;
@@ -26,7 +26,6 @@ export type Product = {
   averageRating: number;
   reviewCount: number;
   bookmarkCount: number;
-  viewCount: number;
   status: ProductStatus;
   createdAt: string;
   updatedAt: string;

@@ -1,5 +1,5 @@
 "use client";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   PRODUCT_PRICING_OPTIONS,
@@ -37,7 +37,6 @@ export function ProductForm({
     register,
     handleSubmit,
     control,
-    watch,
     formState: { errors, isSubmitting: isFormSubmitting },
   } = useForm<ProductFormSchema>({
     resolver: zodResolver(productFormSchema),
@@ -45,7 +44,10 @@ export function ProductForm({
   });
 
   const submitting = isSubmitting ?? isFormSubmitting;
-  const logoUrl = watch("logo");
+  const logoUrl = useWatch({
+    control,
+    name: "logo",
+  });
 
   async function handleFormSubmit(values: ProductFormSchema) {
     const trimmedLogo = values.logo?.trim();

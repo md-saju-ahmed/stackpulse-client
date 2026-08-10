@@ -151,7 +151,7 @@ export function Testimonials() {
           <Reveal className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {cards.map(({ product, review, user }) => (
               <TestimonialCard
-                key={product._id}
+                key={product.id}
                 product={product}
                 review={review}
                 user={user}

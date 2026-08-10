@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { isAdminUser } from "@/lib/auth-utils";
 import { useAdminUsers } from "@/features/users/hooks/useAdminUsers";
 import {
   useApproveUserAccount,
@@ -40,10 +41,10 @@ const PAGE_LIMIT = 10;
 
 const STATUS_FILTERS: { label: string; value: AccountStatus | undefined }[] = [
   { label: "All", value: undefined },
-  { label: "Pending", value: "pending" },
-  { label: "Approved", value: "approved" },
-  { label: "Suspended", value: "suspended" },
-  { label: "Deleted", value: "deleted" },
+  { label: "Pending", value: "PENDING" },
+  { label: "Approved", value: "APPROVED" },
+  { label: "Suspended", value: "SUSPENDED" },
+  { label: "Deleted", value: "DELETED" },
 ];
 
 type PendingAction = {
@@ -89,10 +90,10 @@ const STATUS_BADGE_VARIANT: Record<
   AccountStatus,
   "default" | "secondary" | "destructive" | "outline"
 > = {
-  pending: "outline",
-  approved: "default",
-  suspended: "secondary",
-  deleted: "destructive",
+  PENDING: "outline",
+  APPROVED: "default",
+  SUSPENDED: "secondary",
+  DELETED: "destructive",
 };
 
 function UserRowSkeleton() {
@@ -140,7 +141,7 @@ function UserRow({
   onDelete,
 }: UserRowProps) {
   const initials = (user.name ?? user.email ?? "?").slice(0, 2).toUpperCase();
-  const isDeleted = user.accountStatus === "deleted";
+  const isDeleted = user.accountStatus === "DELETED";
 
   return (
     <TableRow>
@@ -178,7 +179,7 @@ function UserRow({
           >
             {user.accountStatus}
           </Badge>
-          {user.role === "admin" && (
+          {isAdminUser(user) && (
             <Badge variant="outline" className="text-xs">
               Admin
             </Badge>
@@ -195,10 +196,9 @@ function UserRow({
       <TableCell className="text-right">
         {!isDeleted && !isSelf && (
           <div className="flex items-center justify-end gap-1.5">
-            {(user.accountStatus === "pending" ||
-              user.accountStatus === "suspended") && (
+            {user.accountStatus === "PENDING" && (
               <Button
-                id={`admin-user-approve-${user._id}`}
+                id={`admin-user-approve-${user.id}`}
                 variant="default"
                 size="sm"
                 disabled={isBusy}
@@ -208,9 +208,9 @@ function UserRow({
                 Approve
               </Button>
             )}
-            {user.accountStatus === "approved" && (
+            {user.accountStatus === "APPROVED" && (
               <Button
-                id={`admin-user-suspend-${user._id}`}
+                id={`admin-user-suspend-${user.id}`}
                 variant="outline"
                 size="sm"
                 disabled={isBusy}
@@ -220,9 +220,9 @@ function UserRow({
                 Suspend
               </Button>
             )}
-            {user.accountStatus === "suspended" && (
+            {user.accountStatus === "SUSPENDED" && (
               <Button
-                id={`admin-user-unsuspend-${user._id}`}
+                id={`admin-user-unsuspend-${user.id}`}
                 variant="outline"
                 size="sm"
                 disabled={isBusy}
@@ -233,7 +233,7 @@ function UserRow({
               </Button>
             )}
             <Button
-              id={`admin-user-delete-${user._id}`}
+              id={`admin-user-delete-${user.id}`}
               variant="destructive"
               size="sm"
               disabled={isBusy}
@@ -289,7 +289,7 @@ export default function AdminUsersPage() {
             : deleteUser;
 
     try {
-      await mutation.mutateAsync(action.user._id);
+      await mutation.mutateAsync(action.user.id ?? "");
       toast.success(`${action.user.name ?? "User"} ${pastTense(action.kind)}`);
       setAction(null);
     } catch (error) {
@@ -379,9 +379,9 @@ export default function AdminUsersPage() {
               ) : (
                 users.map((u) => (
                   <UserRow
-                    key={u._id}
+                    key={u.id}
                     user={u}
-                    isSelf={u._id === currentUser?.id}
+                    isSelf={u.id === currentUser?.id}
                     isBusy={isMutating}
                     onApprove={() => setAction({ user: u, kind: "approve" })}
                     onSuspend={() => setAction({ user: u, kind: "suspend" })}

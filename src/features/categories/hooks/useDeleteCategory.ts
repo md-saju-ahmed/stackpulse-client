@@ -9,12 +9,7 @@ export function useDeleteCategory() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (slug: string) => {
-      if (!token) {
-        throw new Error("You must be signed in to delete a category.");
-      }
-      return categoryService.deleteCategory(slug, token);
-    },
+    mutationFn: (slug: string) => categoryService.deleteCategory(slug, token),
     onSuccess: (_result, slug) => {
       queryClient.invalidateQueries({ queryKey: ["categories", "list"] });
       queryClient.removeQueries({ queryKey: ["categories", "detail", slug] });
