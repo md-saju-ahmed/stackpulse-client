@@ -37,7 +37,7 @@ export const reviewService = {
   // error-handling pattern documented in src/lib/api.ts.
   async getMyReview(
     productSlug: string,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Review } | null> {
     try {
       return await api.get<Review>(`/api/reviews/${productSlug}/mine`, { jwt });
@@ -52,7 +52,7 @@ export const reviewService = {
   async createReview(
     productSlug: string,
     input: CreateReviewInput,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Review }> {
     return api.post<Review>(`/api/reviews/${productSlug}`, input, { jwt });
   },
@@ -60,14 +60,14 @@ export const reviewService = {
   async updateReview(
     productSlug: string,
     input: UpdateReviewInput,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Review }> {
     return api.patch<Review>(`/api/reviews/${productSlug}`, input, { jwt });
   },
 
   async deleteReview(
     productSlug: string,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: undefined }> {
     return api.delete<undefined>(`/api/reviews/${productSlug}`, { jwt });
   },

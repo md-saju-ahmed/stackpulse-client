@@ -11,12 +11,7 @@ export function useCreateReview(productSlug: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: CreateReviewInput) => {
-      if (!token) {
-        throw new Error("You must be signed in to leave a review.");
-      }
-      return reviewService.createReview(productSlug, input, token);
-    },
+    mutationFn: (input: CreateReviewInput) => reviewService.createReview(productSlug, input, token),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["reviews", productSlug, "list"],

@@ -11,12 +11,7 @@ export function useUpdateReview(productSlug: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: UpdateReviewInput) => {
-      if (!token) {
-        throw new Error("You must be signed in to update your review.");
-      }
-      return reviewService.updateReview(productSlug, input, token);
-    },
+    mutationFn: (input: UpdateReviewInput) => reviewService.updateReview(productSlug, input, token),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["reviews", productSlug, "list"],

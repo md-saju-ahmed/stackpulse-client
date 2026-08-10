@@ -1,7 +1,8 @@
 export type ReviewSortField = "createdAt" | "rating";
 
 export type Review = {
-  _id: string;
+  /** Prisma/PostgreSQL backend field */
+  id: string;
   userId: string;
   productId: string;
   rating: number;
