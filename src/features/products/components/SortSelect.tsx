@@ -24,11 +24,6 @@ const SORT_OPTIONS: { key: string; label: string; value: SortValue }[] = [
     value: { sort: "reviewCount", order: "desc" },
   },
   {
-    key: "views",
-    label: "Most viewed",
-    value: { sort: "viewCount", order: "desc" },
-  },
-  {
     key: "bookmarks",
     label: "Most bookmarked",
     value: { sort: "bookmarkCount", order: "desc" },

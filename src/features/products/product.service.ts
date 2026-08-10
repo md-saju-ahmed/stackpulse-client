@@ -51,7 +51,7 @@ export const productService = {
 
   async createProduct(
     input: CreateProductInput,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Product }> {
     return api.post<Product>("/api/products", input, { jwt });
   },
@@ -59,19 +59,19 @@ export const productService = {
   async updateProduct(
     slug: string,
     input: UpdateProductInput,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Product }> {
     return api.patch<Product>(`/api/products/${slug}`, input, { jwt });
   },
 
-  async deleteProduct(slug: string, jwt: string): Promise<{ data: undefined }> {
+  async deleteProduct(slug: string, jwt?: string | null): Promise<{ data: undefined }> {
     return api.delete<undefined>(`/api/products/${slug}`, { jwt });
   },
 
   // Admin: moderation
   async getPendingProducts(
     query: AdminProductQuery | undefined,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Product[]; meta?: PaginationMeta }> {
     return api.get<Product[]>(
       `/api/products/pending${buildAdminQueryString(query)}`,
@@ -79,20 +79,20 @@ export const productService = {
     );
   },
 
-  async approveProduct(slug: string, jwt: string): Promise<{ data: Product }> {
+  async approveProduct(slug: string, jwt?: string | null): Promise<{ data: Product }> {
     return api.patch<Product>(`/api/products/${slug}/approve`, undefined, {
       jwt,
     });
   },
 
-  async rejectProduct(slug: string, jwt: string): Promise<{ data: Product }> {
+  async rejectProduct(slug: string, jwt?: string | null): Promise<{ data: Product }> {
     return api.patch<Product>(`/api/products/${slug}/reject`, undefined, {
       jwt,
     });
   },
 
   // Owner action: transition REJECTED → PENDING for another review cycle.
-  async resubmitProduct(slug: string, jwt: string): Promise<{ data: Product }> {
+  async resubmitProduct(slug: string, jwt?: string | null): Promise<{ data: Product }> {
     return api.post<Product>(`/api/products/${slug}/resubmit`, undefined, {
       jwt,
     });

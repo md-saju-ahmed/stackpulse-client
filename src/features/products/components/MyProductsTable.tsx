@@ -26,7 +26,7 @@ export function MyProductsTable({
   return (
     <div className="flex flex-col gap-3">
       {products.map((product) => (
-        <Card key={product._id}>
+        <Card key={product.id}>
           <CardHeader className="flex-row items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -59,7 +59,6 @@ export function MyProductsTable({
                 {product.averageRating.toFixed(1)} ({product.reviewCount})
               </span>
               <span>{product.bookmarkCount} bookmarks</span>
-              <span>{product.viewCount} views</span>
             </div>
             <div className="flex items-center gap-2">
               {product.status === "PUBLISHED" && (

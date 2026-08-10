@@ -9,12 +9,7 @@ export function useCreateProduct() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: CreateProductInput) => {
-      if (!token) {
-        throw new Error("You must be signed in to submit a tool.");
-      }
-      return productService.createProduct(input, token);
-    },
+    mutationFn: (input: CreateProductInput) => productService.createProduct(input, token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products", "list"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard", "products"] });
