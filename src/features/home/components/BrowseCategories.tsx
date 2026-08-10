@@ -49,7 +49,7 @@ export function BrowseCategories() {
                 const IconComponent = getCategoryIcon(category.slug);
                 return (
                   <Link
-                    key={category._id}
+                    key={category.id}
                     href={`/products?category=${category.slug}`}
                     className="flex flex-col items-center gap-3 group cursor-pointer"
                   >
