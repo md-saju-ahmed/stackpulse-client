@@ -38,7 +38,7 @@ export const categoryService = {
   // Admin: category management
   async createCategory(
     input: CreateCategoryInput,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Category }> {
     return api.post<Category>("/api/categories", input, { jwt });
   },
@@ -46,14 +46,14 @@ export const categoryService = {
   async updateCategory(
     slug: string,
     input: UpdateCategoryInput,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: Category }> {
     return api.patch<Category>(`/api/categories/${slug}`, input, { jwt });
   },
 
   async deleteCategory(
     slug: string,
-    jwt: string,
+    jwt?: string | null,
   ): Promise<{ data: undefined }> {
     return api.delete<undefined>(`/api/categories/${slug}`, { jwt });
   },

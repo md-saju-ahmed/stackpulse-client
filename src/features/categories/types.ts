@@ -1,7 +1,8 @@
 export type CategorySortField = "createdAt" | "name" | "productCount";
 
 export type Category = {
-  _id: string;
+  /** Prisma/PostgreSQL backend field */
+  id: string;
   name: string;
   slug: string;
   description: string;

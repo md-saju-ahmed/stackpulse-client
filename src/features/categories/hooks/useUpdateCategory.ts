@@ -10,12 +10,7 @@ export function useUpdateCategory(slug: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: UpdateCategoryInput) => {
-      if (!token) {
-        throw new Error("You must be signed in to edit a category.");
-      }
-      return categoryService.updateCategory(slug, input, token);
-    },
+    mutationFn: (input: UpdateCategoryInput) => categoryService.updateCategory(slug, input, token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories", "list"] });
       queryClient.invalidateQueries({
