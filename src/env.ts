@@ -5,10 +5,6 @@ const envSchema = z.object({
     .string()
     .url("NEXT_PUBLIC_API_URL must be a valid URL")
     .default("http://localhost:5000"),
-  BETTER_AUTH_URL: z
-    .string()
-    .url("BETTER_AUTH_URL must be a valid URL")
-    .default("http://localhost:3000"),
 
   NEXT_PUBLIC_DEMO_EMAIL: z
     .string()
@@ -21,7 +17,6 @@ const envSchema = z.object({
 function loadEnv() {
   const result = envSchema.safeParse({
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     NEXT_PUBLIC_DEMO_EMAIL: process.env.NEXT_PUBLIC_DEMO_EMAIL,
     NEXT_PUBLIC_DEMO_PASSWORD: process.env.NEXT_PUBLIC_DEMO_PASSWORD,
   });
