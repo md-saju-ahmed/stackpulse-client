@@ -1,11 +1,6 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-  NEXT_PUBLIC_API_URL: z
-    .string()
-    .url("NEXT_PUBLIC_API_URL must be a valid URL")
-    .default("http://localhost:5000"),
-
   NEXT_PUBLIC_DEMO_EMAIL: z
     .string()
     .email("NEXT_PUBLIC_DEMO_EMAIL must be set to a valid email address"),
@@ -16,7 +11,6 @@ const envSchema = z.object({
 
 function loadEnv() {
   const result = envSchema.safeParse({
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_DEMO_EMAIL: process.env.NEXT_PUBLIC_DEMO_EMAIL,
     NEXT_PUBLIC_DEMO_PASSWORD: process.env.NEXT_PUBLIC_DEMO_PASSWORD,
   });
