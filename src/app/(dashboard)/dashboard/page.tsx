@@ -21,6 +21,7 @@ import {
   Legend,
 } from "recharts";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { isAdminUser } from "@/lib/auth-utils";
 import { useDashboardOverview } from "@/features/dashboard/hooks/useDashboardOverview";
 import { useAdminOverview } from "@/features/dashboard/hooks/useAdminOverview";
 import {
@@ -40,7 +41,7 @@ import { Separator } from "@/components/ui/separator";
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const isAdmin = user?.role === "admin";
+  const isAdmin = isAdminUser(user);
 
   // Query 1: Personal dashboard overview
   const {

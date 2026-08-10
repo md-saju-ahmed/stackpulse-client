@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { LockIcon, ClockIcon, BanIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { isAdminUser } from "@/lib/auth-utils";
 import { useCreateProduct } from "@/features/products/hooks/useCreateProduct";
 import { ProductForm } from "@/features/products/components/ProductForm";
 import type { CreateProductInput } from "@/features/products/types";
@@ -70,7 +71,7 @@ export default function SubmitProductPage() {
     );
   }
 
-  if (user?.accountStatus === "pending") {
+  if (user?.accountStatus === "PENDING") {
     return (
       <Container className="py-10 max-w-3xl">
         <EmptyState
@@ -82,7 +83,7 @@ export default function SubmitProductPage() {
     );
   }
 
-  if (user?.accountStatus === "suspended") {
+  if (user?.accountStatus === "SUSPENDED") {
     return (
       <Container className="py-10 max-w-3xl">
         <EmptyState
@@ -99,7 +100,7 @@ export default function SubmitProductPage() {
       <SectionTitle
         title="Submit a tool"
         description={
-          user?.role === "admin"
+          isAdminUser(user)
             ? "Share a developer tool with the community. As an admin, your submissions go live immediately."
             : "Share a developer tool with the community. New submissions are reviewed by an admin before they go live."
         }
