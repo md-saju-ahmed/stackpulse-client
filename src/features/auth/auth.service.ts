@@ -1,31 +1,45 @@
 "use client";
-import { signIn, signUp, signOut, authClient } from "@/lib/auth";
-import type { LoginInput, RegisterInput } from "./types";
+import { api } from "@/lib/api";
+import { dispatchAuthChange } from "@/lib/auth";
+import { env } from "@/env";
+import type { AuthUser, LoginInput, RegisterInput } from "./types";
+
+type AuthResponse = {
+  user: AuthUser;
+};
 
 export const authService = {
   async login(input: LoginInput) {
-    const result = await signIn.email({
-      email: input.email,
-      password: input.password,
-    });
-    return result;
+    try {
+      const { data } = await api.post<AuthResponse>("/api/auth/login", input);
+      dispatchAuthChange();
+      return { data, error: null };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Login failed";
+      return { data: null, error: { message } };
+    }
   },
 
   async register(input: RegisterInput) {
-    const result = await signUp.email({
-      email: input.email,
-      password: input.password,
-      name: input.name,
-      image: input.image || undefined,
-    });
-    return result;
+    try {
+      const { data } = await api.post<AuthResponse>("/api/auth/register", input);
+      dispatchAuthChange();
+      return { data, error: null };
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Registration failed";
+      return { data: null, error: { message } };
+    }
   },
 
   async logout() {
-    await signOut();
-  },
-
-  async getToken() {
-    return authClient.token();
+    try {
+      await fetch(`${env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      dispatchAuthChange();
+    }
   },
 };
